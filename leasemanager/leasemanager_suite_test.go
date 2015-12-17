@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestOsutils(t *testing.T) {
+func Test(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Pez Dispenser Suite")
+	RunSpecs(t, "LeaseDispenser Suite")
 }

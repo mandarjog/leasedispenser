@@ -10,7 +10,7 @@ type MemLeaseDB struct {
 	DB map[string]LeaseInfo
 }
 
-func NewLeaseDB() LeaseDB {
+func NewLeaseDB() MemLeaseDB {
 	return MemLeaseDB{
 		DB: make(map[string]LeaseInfo),
 	}

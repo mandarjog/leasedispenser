@@ -59,4 +59,13 @@ var _ = Describe("Lease Manager Test", func() {
 			Ω(pli.ProviderLeaseID).ShouldNot(Equal(""))
 		})
 	})
+	Describe("Request for bad SKU", func() {
+		BeforeEach(func() {
+			respLeaseinfo, err = leaseManager.Request(LeaseRequest{SKU: "DOESNOTEXIST"})
+		})
+		It("Should Fail with error message", func() {
+			Ω(err).ShouldNot(BeNil())
+			Ω(err.Error()).Should(ContainSubstring("Not found"))
+		})
+	})
 })

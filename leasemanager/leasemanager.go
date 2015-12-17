@@ -31,8 +31,9 @@ func (s LeaseManagerState) Info(leaseID string, usecache bool) (LeaseInfo, error
 		found    bool
 		provider LeaseProvider
 		err      error
+		info     LeaseInfo
 	)
-	info, err := s.DB.FindByID(leaseID)
+	info, err = s.DB.FindByID(leaseID)
 	if err != nil {
 		return info, err
 	}
@@ -41,13 +42,11 @@ func (s LeaseManagerState) Info(leaseID string, usecache bool) (LeaseInfo, error
 		provider, found = s.Registry[info.Req.SKU]
 		if !found {
 			err = errors.New(info.Req.SKU + " Not found")
-			lo.G.Error(err.Error())
 			return LeaseInfo{}, err
 		}
 
 		pli, err := provider.Info(info.ProviderLeaseID)
 		if err != nil {
-			lo.G.Error(err.Error())
 			return LeaseInfo{}, err
 		}
 		leaseInfo := LeaseInfo{
@@ -57,10 +56,6 @@ func (s LeaseManagerState) Info(leaseID string, usecache bool) (LeaseInfo, error
 		}
 
 		err = s.DB.CreateOrUpdate(leaseID, leaseInfo)
-		if err != nil {
-			lo.G.Error(err.Error())
-		}
-
 		info = leaseInfo
 
 	}
