@@ -39,11 +39,14 @@ type (
 	LeaseManager interface {
 		Request(req LeaseRequest) (info LeaseInfo, err error)
 		Info(leaseID string, usecache bool) (info LeaseInfo, err error)
+		List(sku string, owner string) (info []LeaseInfo, err error)
+		//PollOutstandingLeases()
 	}
 
 	LeaseDB interface {
 		CreateOrUpdate(leaseID string, lease LeaseInfo) (err error)
 		FindBySKU(sku string) (leases []LeaseInfo, err error)
 		FindByID(leaseID string) (lease LeaseInfo, err error)
+		FindAll() (leases []LeaseInfo, err error)
 	}
 )

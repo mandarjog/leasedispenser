@@ -62,6 +62,20 @@ func (s LeaseManagerState) Info(leaseID string, usecache bool) (LeaseInfo, error
 	return info, err
 }
 
+// List -- List all leases with 2 selectors
+// empty selector matches everything
+func (s LeaseManagerState) List(sku string, owner string) (info []LeaseInfo, err error) {
+	leases, err := s.DB.FindAll()
+	if err == nil {
+		for _, lease := range leases {
+			if (sku == "" || lease.Req.SKU == sku) && (owner == "" || lease.Req.Owner == owner) {
+				info = append(info, lease)
+			}
+		}
+	}
+	return
+}
+
 // Request -- use providers to satisfy requests
 func (s LeaseManagerState) Request(req LeaseRequest) (LeaseInfo, error) {
 	var (

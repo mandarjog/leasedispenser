@@ -11,7 +11,7 @@ var _ = Describe("Lease Manager Test", func() {
 	var (
 		leaseManager  LeaseManager
 		FakeProvider  LeaseProvider
-		FakeDB        LeaseDB
+		FakeDB        fakes.MemLeaseDB
 		leaseReq      ProviderLeaseRequest
 		leaseID       string
 		leaseinfo     LeaseInfo
@@ -41,7 +41,7 @@ var _ = Describe("Lease Manager Test", func() {
 		registry[skuID] = FakeProvider
 		leaseManager = NewLeaseManager(registry, FakeDB)
 	})
-	Describe("Request", func() {
+	Describe("Request Happy path", func() {
 		BeforeEach(func() {
 			respLeaseinfo, err = leaseManager.Request(req)
 		})
@@ -57,6 +57,28 @@ var _ = Describe("Lease Manager Test", func() {
 			}, 3, 1).Should(Equal(LeaseStatusActive))
 			pli, _ := leaseManager.Info(respLeaseinfo.ID, false)
 			Ω(pli.ProviderLeaseID).ShouldNot(Equal(""))
+		})
+		AfterEach(func() {
+			FakeDB.Clear()
+		})
+	})
+	Describe("Given a successful lease request for 2 skus", func() {
+		BeforeEach(func() {
+			leaseManager.Request(req)
+			leaseManager.Request(req)
+		})
+		It("Then 2 leases Should be obtained thru DB.FindAll()", func() {
+			leases, err := FakeDB.FindAll()
+			Ω(err).ShouldNot(HaveOccurred())
+			Ω(len(leases)).Should(Equal(2))
+		})
+		It("Then 2 leases should be obtained thru LeaseManager.List() call", func() {
+			leases, err := leaseManager.List("", "")
+			Ω(err).ShouldNot(HaveOccurred())
+			Ω(len(leases)).Should(Equal(2))
+		})
+		AfterEach(func() {
+			FakeDB.Clear()
 		})
 	})
 	Describe("Request for bad SKU", func() {
