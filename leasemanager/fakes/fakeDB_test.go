@@ -1,4 +1,4 @@
-package leasemanager_test
+package fakes_test
 
 import (
 	. "github.com/mandarjog/leasedispenser/leasemanager"
