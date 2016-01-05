@@ -37,10 +37,16 @@ type (
 	}
 
 	LeaseManager interface {
+		// NewLeaseManager(registry map[string]LeaseProvider, db LeaseDB) (leaseManager LeaseManager)
+		// Request -- Request a Lease and schedule call to the back end
 		Request(req LeaseRequest) (info LeaseInfo, err error)
+		// Info -- Get info about the named lease. If usecache=false, attempt to contact  provider for pending leases
 		Info(leaseID string, usecache bool) (info LeaseInfo, err error)
+		// List -- List lease info for leases matching optional sku and owner
 		List(sku string, owner string) (info []LeaseInfo, err error)
-		//PollOutstandingLeases()
+		// PollForPendingLeases -- Attempt to contact providers for pending leases and update database
+		// It should poll at most maxPolls times before exiting
+		PollForPendingLeases(pollInterval int64, maxPolls int)
 	}
 
 	LeaseDB interface {
